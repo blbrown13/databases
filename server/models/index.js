@@ -1,31 +1,35 @@
+// MODEL only interfaces with DB
+  // answers only to CONTROLLER
+
 var db = require('../db');
-// MODEL interacts w/DB
 
 module.exports = {
   messages: {
-    get: function () { console.log('model get');}, // a function which produces all the messages
-    post: function (req, res, cb) {
-      console.log('POST MODEL: ', req);
+    get: function (cb) {
+      db.query('SELECT * FROM messages', function(err, results) {
+        cb(err, results);
+      });
+    }, // a function which produces all the messages
+    post: function (parameters, cb) {
+      var dbString = 'INSERT INTO messages (message, username, roomname) VALUES (?, ?, ?)';
+      db.query(dbString, parameters, function(err, results) {
+        cb(err, results);
+      });
     } // a function which can be used to insert a message into the database
   },
 
   users: {
     // Ditto as above.
-    get: function () {},
-    post: function (req, res, cb) {
-      console.log('POST MODEL USER: ', req);
-      db.dbConnection.query("SQL STUFF", thing, function(err, res){
-        if (err) {throw err}
-        cb();
+    get: function (cb) {
+      db.query('SELECT * FROM users', function(err, results) {
+        cb(err, results);
       });
-      req.on('end', function(){
-        res.end();
+    },
+    post: function (parameters, cb) {
+      var dbString = 'INSERT INTO users (username) VALUES (?)';
+      db.query(dbString, parameters, function(err, results) {
+        cb(err, results);
       });
     }
   }
 };
-
-// dbConnection.query("SQL STUFF", thing, function(err, res){
-//   if (err) {throw err}
-//   res.doStuff
-// })
